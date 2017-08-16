@@ -19,6 +19,9 @@
   "homepage": "https://github.com/noetic97/jet-fuel#readme",
   "dependencies": {
     "body-parser": "^1.17.2",
-    "express": "^4.15.4"
+    "express": "^4.15.4",
+    "knex": "^0.13.0",
+    "nodemon": "^1.11.0",
+    "pg": "^7.1.2"
   }
 }

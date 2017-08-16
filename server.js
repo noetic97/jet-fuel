@@ -2,80 +2,103 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 
+const environment = process.env.NODE_ENV || 'development';
+const configuration = require('./knexfile')[environment];
+const database = require('knex')(configuration);
+
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static('public'));
 
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Jet Mother**cking Fuel';
-app.locals.folders = {
-  1: 'Bookmarks',
-}
-app.locals.links = {
-  1: 'best site evah!',
-  shortURL: 'http://jetfuel.heroku/abc123',
-  ogURL: 'http://frontend.turing.io/projects/jet-fuel.html',
-  date: 'date',
-  folder_id: 1,
-}
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
 app.get('/api/v1/folders', (req, res) => {
-  const allFolders = app.locals.folders;
-  res.json(allFolders);
-})
-
-app.get('/api/v1/links', (req, res) => {
-  const allLinks = app.locals.links;
-  res.json(allLinks);
-})
-
-app.get('/api/v1/folders/:id', (req, res) => {
-  const { id } = req.params;
-  const title = app.locals.folders[id]
-
-  if(!title) { return res.status(404).send('This folder has not been found') }
-
-  res.json({ id, title })
-});
-
-app.get('/api/v1/folders/:id/links/:link_id', (req, res) => {
-  const { id, link_id } = req.params;
-  const { title, shortURL, ogURL, date } = app.locals.links
-  const folder_id = app.locals.folders[link_id]
-
-  if(!title) { return res.status(404).send('This link has not been found') }
-
-  res.json({ title, shortURL, ogURL, date, folder_id })
+  database('folders').select()
+    .then(folders => {
+      res.status(200).json(folders)
+    })
+    .catch(err => {
+      res.status(500).json({ err })
+    });
 });
 
 app.post('/api/v1/folders', (req, res) => {
-  const id = Date.now();
-  const { title } = req.body;
+  const newFolder = req.body;
 
-  if(!title) { return res.status(422).send({ error: 'There is no title'} ) }
+  for (let requiredParameter of ['title']) {
+    if (!newFolder[requiredParameter]) {
+      return res.status(422).json({
+        error: `Missing required parameter ${requiredParameter}.`
+      })
+    }
+  }
+  database('folders').insert(newFolder, 'id')
+    .then(folder => {
+      res.status(201).json(newFolder)
+    })
+    .catch(err => {
+      res.status(500).json({ err });
+    });
+});
 
-  app.locals.folders[id] = title;
-
-  res.status(201).json({ id, title });
-})
-
-app.post('/api/v1/folders/:id/links', (req, res) => {
+app.get('/api/v1/folders/:id', (req, res) => {
   const { id } = req.params;
-  const link_id = Date.now();
-  const { title, shortURL, ogURL, date, folder_id } = req.body;
-  console.log(req.body);
 
-  if(!title) { return res.status(422).send({ error: 'There is no title'} ) }
+  database('folders').where({ id }).select()
+    .then(folder => {
+      if (!folder.length) {
+        return res.status(404).json({
+          error: `Could not find a folder with an id of ${id}`
+        });
+      }
+      res.status(200).json({ folder });
+    })
+    .catch(err => res.status(500).json({ err }));
+});
 
-  app.locals.links[id] = title;
-  app.locals.links[link_id] = folder_id;
+app.get('/api/v1/links', (req, res) => {
+  database('links').select()
+    .then(links => {
+      res.status(200).json(links)
+    })
+    .catch(err => {
+      res.status(500).json({ err })
+    });
+});
 
+app.post('/api/v1/links', (req, res) => {
+  const { id } = req.params;
+  const newLink = req.body;
 
-  res.status(201).json({ link_id, title, shortURL, ogURL, date, folder_id });
+  for (let requiredParameter of ['description', 'ogURL', 'folder_id']) {
+    if (!newLink[requiredParameter]) {
+      return res.status(422).json({
+        error: `Missing required parameter ${requiredParameter}.`
+      })
+    }
+  }
+  database('links').insert(newLink, 'id')
+    .then(link => {
+      res.status(201).json(newLink)
+    })
 })
+
+app.get('/api/v1/folders/:id/links/', (req, res) => {
+  const { id } = req.params;
+
+  database('links').where({'folder_id': id }).select()
+    .then(links => {
+      res.status(200).json(links);
+    })
+    .catch(error => {
+      res.status(500).json({ error });
+    })
+});
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on http://localhost:${app.get('port')}.`);

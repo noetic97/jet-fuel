@@ -11,23 +11,38 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <title>Jet Fuel!!</title>
 </head>
-<header>
-  <div class="logo">
-    <h1>Jet Fuel!!</h1>
-    <img src="./assets/jet-fuel-logo.gif"
-    alt="jet fuel logo"
-    class="header-logo">
-  </div>
-  <h2>Stop wasting time! Add Jet Fuel to your web searches!</h2>
-</header>
 <body>
-  <form action="submit">
-    <input type="text"
-           placeholder="create a new folder"
-           class="folder-namer">
-    <input type="submit"
-           class="folder-submit">
-  </form>
+  <header>
+    <div class="logo">
+      <h1>Jet Fuel!!</h1>
+      <img src="./assets/jet-fuel-logo.gif"
+      alt="jet fuel logo"
+      class="header-logo">
+    </div>
+    <h2>Stop wasting time! Add Jet Fuel to your web searches!</h2>
+  </header>
+  <main>
+    <form class="input-form">
+      <select name="folder-select"
+              id="folder-select">
+        <option value="Add a new folder">
+          Add a new folder
+        </option>
+      </select>
+      <input type="text"
+             placeholder="create a new folder"
+             class="folder-namer">
+      <input type="text"
+             placeholder="add a link"
+             class="link-input">
+      <input type="submit"
+             class="folder-submit">
+    </form>
+    <article class="folder-display">
+      <article class="link-display">
+      </article>
+    </article>
+  </main>
 <script src="index.js"></script>
 </body>
 </html>

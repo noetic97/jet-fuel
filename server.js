@@ -29,7 +29,6 @@ app.get('/api/v1/folders', (req, res) => {
 
 app.post('/api/v1/folders', (req, res) => {
   const newFolder = req.body;
-
   for (let requiredParameter of ['title']) {
     if (!newFolder[requiredParameter]) {
       return res.status(422).json({
@@ -103,3 +102,5 @@ app.get('/api/v1/folders/:id/links/', (req, res) => {
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on http://localhost:${app.get('port')}.`);
 });
+
+module.exports = app;

@@ -3,10 +3,17 @@ const folderNamer = $('.folder-namer');
 
 folderSubmit.click((e) => {
   e.preventDefault();
-  console.log('suh dude');
 })
 
 folderNamer.change((e) => {
-  console.log(e.target.value);
-  e.target.value = '';
+  fetch('/api/v1/folders', {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ title: folderNamer.val() })
+  })
+  .then(res => res.json())
+  .then(data => console.log(data.title))
+  folderNamer.val('');
 })

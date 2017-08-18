@@ -2,13 +2,14 @@ const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
 const server = require('../server');
-const seedData = require('../db/seeds/dev/folders')
+// const seedData = require('../db/seeds/dev/folders')
 
 chai.use(chaiHttp);
-beforeEach((done) => {
-  console.log(seedData.seed());
-  done()
-})
+// beforeEach((done) => {
+//   console.log(seedData.seed());
+//   console.log(server);
+//   done()
+// })
 
 describe('Client Routes', () => {
   it('Should return the home page with text', (done) => {
@@ -26,7 +27,6 @@ describe('Client Routes', () => {
     chai.request(server)
     .get('/api/v1/folders')
     .end((err, response) => {
-      console.log(response.body);
       response.should.have.status(200);
       response.should.be.json;
       response.body.should.be.a('array');
@@ -37,7 +37,6 @@ describe('Client Routes', () => {
       // response.body[0].title.should.equal('1');
       response.body[0].should.have.property('created_at');
       response.body[0].should.have.property('updated_at');
-
       done();
     })
   })

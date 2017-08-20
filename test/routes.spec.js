@@ -39,7 +39,7 @@ describe('API Routes', () => {
       response.body.should.be.a('array');
       response.body.length.should.equal(1);
       response.body[0].should.have.property('id');
-      response.body[0].id.should.equal(17);
+      response.body[0].id.should.equal(1);
       response.body[0].should.have.property('title');
       response.body[0].title.should.equal('Favorites');
       response.body[0].should.have.property('created_at');

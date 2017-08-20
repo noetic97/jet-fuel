@@ -6,7 +6,8 @@ exports.seed = function(knex, Promise) {
     .then(() => {
       return Promise.all([
         knex('folders').insert({
-          title: 'Favorites'
+          title: 'Favorites',
+          test_id: 1,
         }, 'id')
         .then(folder => {
           return knex('links').insert([

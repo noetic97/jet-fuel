@@ -89,6 +89,20 @@ describe('API Routes', () => {
         done();
       });
     });
+
+    it('SAD PATH - Should not allow a user to add a folder if it already exists', (done) => {
+      chai.request(server)
+      .post('/api/v1/folders')
+      .send({
+        id: 4,
+        title: "Sweet folder name"
+      })
+      .end((err, response) => {
+        response.should.have.status(500);
+        response.should.be.json;
+        done();
+      });
+    });
   });
 
   describe('GET /api/v1/folders/:id', () => {

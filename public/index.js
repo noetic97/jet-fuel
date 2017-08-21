@@ -29,7 +29,7 @@ folderSubmit.click((e) => {
   folderNamer.val('');
   linkNamer.val('');
   linkDescription.val('');
-})
+});
 
 folderNamer.change((e) => {
   fetch('/api/v1/folders', {

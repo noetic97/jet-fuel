@@ -14,7 +14,6 @@ exports.seed = function(knex, Promise) {
           title: 'Secrets'
         }])
         .then(folder => {
-          console.log(folder.fields, 'folder');
           return knex('links').insert([
             {
               id: 1,

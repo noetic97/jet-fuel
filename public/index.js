@@ -1,5 +1,7 @@
 const folderSubmit = $('.folder-submit');
 const folderNamer = $('.folder-namer');
+const linkNamer = $('.link-input')
+const linkDescription = $('.description-input')
 const deleteLink = $('.delete-link')
 const deleteFolder = $('.delete-folder')
 const folderSelect = $('.folder-button')
@@ -13,28 +15,22 @@ const getFolders = () => {
 }
 
 const displayError = (error) => {
-  console.log(error);
   $('#error-display').append(`<div>error</div>`)
 }
 
 const appendFolders = (data) => {
-  $('.folder-display').append(data.map((folder) =>
-      `<div>
-        <p class="folder-title">${folder.title}</p>
-        <button class="folder-button">
-          <img class="folder-img"
-               src="./assets/wood-folder.ico"
-               alt="opening and closing folder">
-        </button>
-      </div>`
+  $('.folder-display').append(data.map((folder) => {
+    console.log(folder);
+    return `<div class="folder" id="${folder.id}"><p class="folder-title">${folder.title}</p><button class="folder-button"><img class="folder-img" src="./assets/wood-folder.ico" alt="opening and closing folder"></button></div>`
+  }
     ))
 }
 
-
-
 folderSubmit.click((e) => {
   e.preventDefault();
-  console.log(e);
+  folderNamer.val('');
+  linkNamer.val('');
+  linkDescription.val('');
 })
 
 folderNamer.change((e) => {
@@ -52,7 +48,24 @@ folderNamer.change((e) => {
     appendFolders(folderArray)
   })
   .catch(err => displayError(err))
-  folderNamer.val('');
+})
+
+linkNamer.change((e) => {
+  const folder_id = $('#folder')
+  console.log(folder_id);
+  fetch('/api/v1/links', {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+       description: linkDescription.val(),
+       ogURL: linkNamer.val(),
+       folder_id: 35,
+    })
+  })
+  .then(res => res.json())
+  .then(data => console.log(data))
 })
 
 deleteFolder.click((e) => {
@@ -60,13 +73,11 @@ deleteFolder.click((e) => {
     method: 'DELETE',
   })
   .then(res => {
-    console.log(res, 'not json')
-    console.log(res.json(), 'json')
     return res.json()
   })
 })
 
-$('.folder-image').click(() => {
+$('.folder').click((e) => {
   console.log('hi');
   console.log(e);
 })

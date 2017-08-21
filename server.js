@@ -65,7 +65,6 @@ app.delete('/api/v1/folders/:id', (req, res) => {
 
   database('folders').where({ id }).del()
     .then(res => {
-      console.log(res);
       return res.status(200)
       .json({ deleted: `The folder with id ${id} was successfully deleted.`})
     })

@@ -20,7 +20,6 @@ const displayError = (error) => {
 
 const appendFolders = (data) => {
   $('.folder-display').append(data.map((folder) => {
-    console.log(folder);
     return `<div class="folder" id="${folder.id}"><p class="folder-title">${folder.title}</p><button class="folder-button"><img class="folder-img" src="./assets/wood-folder.ico" alt="opening and closing folder"></button></div>`
   }
     ))
@@ -52,7 +51,6 @@ folderNamer.change((e) => {
 
 linkNamer.change((e) => {
   const folder_id = $('#folder')
-  console.log(folder_id);
   fetch('/api/v1/links', {
     method: 'POST',
     headers: {
@@ -78,8 +76,7 @@ deleteFolder.click((e) => {
 })
 
 $('.folder').click((e) => {
-  console.log('hi');
-  console.log(e);
+
 })
 
 // Page load

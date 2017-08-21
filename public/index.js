@@ -22,7 +22,7 @@ const appendFolders = (data) => {
   $('.folder-display').append(data.map((folder) => {
     return `<div class="folder" id="${folder.id}"><p class="folder-title">${folder.title}</p><button class="folder-button"><img class="folder-img" src="./assets/wood-folder.ico" alt="opening and closing folder"></button></div>`
   }))
-}
+};
 
 folderSubmit.click((e) => {
   e.preventDefault();

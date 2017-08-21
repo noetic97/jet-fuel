@@ -64,6 +64,7 @@ describe('API Routes', () => {
       chai.request(server)
       .post('/api/v1/folders')
       .send({
+        id: 3,
         title: "Sweet folder name"
       })
       .end((err, response) => {

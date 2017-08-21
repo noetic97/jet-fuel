@@ -161,6 +161,7 @@ describe('API Routes', () => {
       chai.request(server)
       .post('/api/v1/links')
       .send({
+        id: 5,
         description: "Awesome link",
         ogURL: "http://someplaceonthewebs.com",
         folder_id: 1,

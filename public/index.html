@@ -25,12 +25,15 @@
     <form class="input-form">
       <select name="folder-select"
               id="folder-select">
-        <option value="Add a new folder">
-          Add a new folder
+        <option value="Select a folder"
+                disabled
+                selected>Select a folder
         </option>
+        <option value="Add a new folder">Add a new Folder</option>
       </select>
       <input type="text"
              placeholder="create a new folder"
+             id="folder-namer"
              class="folder-namer">
       <input type="text"
              placeholder="add a link"
@@ -38,11 +41,16 @@
       <input type="submit"
              class="folder-submit">
     </form>
+    <section id="error-display"></section>
+    <section>
+      <h3 class="">Folders</h3>
+    </section>
     <article class="folder-display">
-      <article class="link-display">
-      </article>
+      <h3 class="folder-name"></h3>
     </article>
   </main>
 <script src="index.js"></script>
 </body>
 </html>
+
+<img src="" alt="">

@@ -24,11 +24,20 @@ const appendFolders = (data) => {
   }))
 };
 
+const selectFolder = (selected) => {
+  const selectValue = $('option').val()
+  console.log(selectValue);
+  // if (selected === )
+}
+
+// $('select').selectFolder()
+
 folderSubmit.click((e) => {
   e.preventDefault();
   folderNamer.val('');
   linkNamer.val('');
   linkDescription.val('');
+  selectFolder()
 });
 
 folderNamer.change((e) => {
@@ -46,6 +55,7 @@ folderNamer.change((e) => {
     appendFolders(folderArray)
   })
   .catch(err => displayError(err))
+  linkNamer.show()
 })
 
 linkNamer.change((e) => {
@@ -80,3 +90,6 @@ $('.folder').click((e) => {
 
 // Page load
 getFolders()
+folderNamer.hide()
+linkNamer.hide()
+linkDescription.hide()

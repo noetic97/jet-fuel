@@ -10,11 +10,14 @@ app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Jet Mother**cking Fuel';
 
 const requireHTTPS = (req, res, next) => {
-  if (!req.secure) {
-    return res.redirect(`https://${req.hostname}${req.url}`)
-  };
-  return next()
-}
+  if(req.headers.host === 'localhost:3000' || '127.0.0.1') {
+    return next()
+  }
+    if (!req.headers['x-forwarded-proto']) {
+      return res.redirect(`https://${req.headers('host')}${req.url}`)
+    };
+    next()
+  }
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))

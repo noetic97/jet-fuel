@@ -1,5 +1,13 @@
 {
   "short_name": "Jet Fuel",
   "name": "Joe's Jet Fuel",
-  "start_url": "index.html?launcher=true"
+  "icons": [
+    {
+      "src": "./assets/jet-fighter.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "index.html?launcher=true",
+  "display": "fullscreen"
 }

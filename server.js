@@ -6,12 +6,21 @@ const environment = process.env.NODE_ENV || 'test';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(express.static('public'));
-
 app.set('port', process.env.PORT || 3000);
 app.locals.title = 'Jet Mother**cking Fuel';
+
+const requireHTTPS = (req, res, next) => {
+  if (!req.secure) {
+    return res.redirect(`https://${req.hostname}${req.url}`)
+  };
+  return next()
+}
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(requireHTTPS)
+app.use(express.static('public'));
+
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');

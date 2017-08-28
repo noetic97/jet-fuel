@@ -5,9 +5,21 @@
     {
       "src": "./assets/jet-fighter.png",
       "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "./assets/jet-fighter.png",
+      "type": "image/png",
       "sizes": "192x192"
+    },
+    {
+      "src": "./assets/jet-fighter.png",
+      "type": "image/png",
+      "sizes": "512x512"
     }
   ],
   "start_url": "index.html?launcher=true",
-  "display": "fullscreen"
+  "display": "fullscreen",
+  "theme-color": "#4f92c3",
+  "background-color": "#4f92c3"
 }

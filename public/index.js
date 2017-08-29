@@ -22,23 +22,35 @@ const folderWrapper = (folder) => `<div class="folder" id=${folder.id}>
                                           id=${folder.id}
                                           src="./assets/wood-folder.ico"
                                           alt="wood folder">
+                                      <article class="link-display hidden-display">
+                                        <ul class="link-list" id=${folder.id}></ul>
+                                      </article>
                                    </div>`;
 const folderOption = (folder) => `<option value=${folder.id}>${folder.title}</option>`;
 const linkWrapper = (link) => `<li id=${link.folder_id}>${link.description}: ${link.ogURL}</li>`;
-
 
 const appendFolders = (folders) => {
   $('.folder-display').append(folders.map(folderWrapper));
   $('#folder-select').append(folders.map(folderOption));
 };
 
-const appendLinks = (links) => {
-  $('.link-list').append(links.map(linkWrapper));
+const appendLinks = (links, e) => {
+  const currentLinks = links.filter((link) => {
+    return parseInt(e.target.id) === link.folder_id
+  })
+  $('.link-list').append(currentLinks.map(linkWrapper));
 }
 
 folderSubmit.click((e) => {
   e.preventDefault();
 });
+
+checkEnabled = () => {
+  if (folderNamer.val() === '' || linkNamer.val() === '' && linkDescription.val() === '') {
+        folderSubmit.attr('disabled')
+      }
+    folderSubmit.attr('disabled', false)
+}
 
 
 const toggleInputs = (e) => {
@@ -57,6 +69,7 @@ const toggleInputs = (e) => {
 
 const addFolder = (e) => {
   e.preventDefault()
+  checkEnabled()
   fetch('/api/v1/folders', {
     method: 'POST',
     headers: {
@@ -99,7 +112,7 @@ const addLink = (e) => {
   .then(links => {
     const linkArray = []
     linkArray.push(links)
-    appendLinks(linkArray)
+    appendLinks(linkArray, e)
   })
   .catch(err => displayError(err))
   linkNamer.val('')
@@ -111,13 +124,14 @@ const displayLinks = (e) => {
   const id = e.target.id;
   fetch(`api/v1/folders/${id}/links`)
     .then(res => res.json())
-    .then(links => appendLinks(links))
+    .then(links => appendLinks(links, e))
     .catch(err => displayError(err))
     $('.folder-display').find('.link-display').toggleClass('hidden-display');
 }
 
 // Page load
 getFolders()
+checkEnabled()
 folderNamer.hide()
 linkNamer.hide()
 linkDescription.hide()

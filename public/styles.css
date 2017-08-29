@@ -55,6 +55,14 @@ input {
   margin: 10px;
 }
 
+.select-folder {
+  text-align: center;
+}
+
+section h3 {
+  text-align: center;
+}
+
 .folder-img {
   height: 100px;
 }
@@ -78,4 +86,31 @@ input {
 
 .hidden-display {
   display: none;
+}
+
+@media (max-width: 800px) {
+  .logo {
+    flex-direction: column;
+  }
+  header {
+    height: 400px;
+  }
+
+  .folder {
+    flex-basis: 33%
+  }
+}
+
+@media (max-width: 500px) {
+  h1 {
+    font-size: 50px;
+  }
+
+  h2 {
+    margin: 20px;
+  }
+
+  .folder {
+    flex-basis: 100%
+  }
 }

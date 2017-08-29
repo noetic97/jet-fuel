@@ -2,42 +2,50 @@ const folderSubmit = $('.folder-submit');
 const folderNamer = $('.folder-namer');
 const linkNamer = $('.link-input')
 const linkDescription = $('.description-input')
-const deleteLink = $('.delete-link')
-const deleteFolder = $('.delete-folder')
-const folderSelect = $('.folder-button')
+const folderSelect = $('select')
 
 
 const getFolders = () => {
   fetch('api/v1/folders')
   .then(res => res.json())
-  .then(data => appendFolders(data))
+  .then(folders => appendFolders(folders))
   .catch(err => displayError(err))
 }
 
 const displayError = (error) => {
-  $('#error-display').append(`<div>error</div>`)
+  $('#error-display').append(`<div>ERROR: ${error}</div>`)
 }
 
-const appendFolders = (data) => {
-  $('.folder-display').append(data.map((folder) => {
-    return `<div class="folder" id="${folder.id}"><p class="folder-title">${folder.title}</p><button class="folder-button"><img class="folder-img" src="./assets/wood-folder.ico" alt="opening and closing folder"></button></div>`
-  }))
+const folderWrapper = (folder) => `<div class="folder" id="${folder.id}">
+                                     <p id="folder-title">${folder.title}</p>
+                                     <img class="folder-img"
+                                          src="./assets/wood-folder.ico"
+                                          alt="wood folder">
+                                   </div>`;
+const folderOption = (folder) => `<option value=${folder.id}>${folder.title}</option>`;
+
+
+const appendFolders = (folders) => {
+  $('.folder-display').append(folders.map(folderWrapper));
+  $('#folder-select').append(folders.map(folderOption));
 };
-
-const selectFolder = (selected) => {
-  const selectValue = $('option').val()
-  console.log(selectValue);
-  // if (selected === )
-}
-
-// $('select').selectFolder()
 
 folderSubmit.click((e) => {
   e.preventDefault();
-  folderNamer.val('');
-  linkNamer.val('');
-  linkDescription.val('');
-  selectFolder()
+});
+
+folderSelect.change((e) => {
+  if (e.target.value === 'Add a new folder') {
+    folderNamer.show()
+    linkDescription.hide()
+    linkNamer.hide()
+  } else {
+    folderNamer.hide()
+  }
+  if (e.target.value !== 'Add a new folder' && e.target.value !== 'Select a folder') {
+    linkDescription.show()
+    linkNamer.show()
+  }
 });
 
 folderNamer.change((e) => {
@@ -49,17 +57,25 @@ folderNamer.change((e) => {
     body: JSON.stringify({ title: folderNamer.val() })
   })
   .then(res => res.json())
-  .then(data => {
+  .then((data) => {
     const folderArray = []
-    folderArray.push(data)
-    appendFolders(folderArray)
+    if (!data.error) {
+      folderArray.push(data)
+      appendFolders(data)
+      folderNamer.val('');
+      folderNamer.hide()
+      linkDescription.show()
+      linkNamer.show()
+    } else {
+      displayError(data.error)
+    }
   })
   .catch(err => displayError(err))
-  linkNamer.show()
+
 })
 
 linkNamer.change((e) => {
-  const folder_id = $('#folder')
+  const folder_id = $('#folder-select').val()
   fetch('/api/v1/links', {
     method: 'POST',
     headers: {
@@ -68,24 +84,16 @@ linkNamer.change((e) => {
     body: JSON.stringify({
        description: linkDescription.val(),
        ogURL: linkNamer.val(),
-       folder_id: 35,
+       folder_id: folder_id,
     })
   })
   .then(res => res.json())
-  .then(data => console.log(data))
-})
+  .then(data => {
 
-deleteFolder.click((e) => {
-  fetch('/api/vi/folders:id', {
-    method: 'DELETE',
+    console.log(data)
   })
-  .then(res => {
-    return res.json()
-  })
-})
-
-$('.folder').click((e) => {
-
+  linkNamer.val('')
+  linkDescription.val('')
 })
 
 // Page load

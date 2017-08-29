@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 
-const environment = process.env.NODE_ENV || 'test';
+const environment = process.env.NODE_ENV || 'development';
 const configuration = require('./knexfile')[environment];
 const database = require('knex')(configuration);
 
@@ -48,13 +48,9 @@ app.post('/api/v1/folders', (req, res) => {
       })
     }
   }
-  database('folders').insert(newFolder, 'id')
-    .then(folder => {
-      res.status(201).json(newFolder)
-    })
-    .catch(err => {
-      res.status(500).json({ err });
-    });
+  database('folders').insert(newFolder, '*')
+  .then(folder => res.status(201).json(folder))
+  .catch(err => res.status(500).json({ err }))
 });
 
 app.get('/api/v1/folders/:id', (req, res) => {

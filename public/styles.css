@@ -58,3 +58,20 @@ input {
 .folder-img {
   height: 100px;
 }
+
+.folder-display{
+  position: relative;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+}
+
+.folder {
+  flex-basis: 20%;
+  text-align: center;
+  border-radius: 15px;
+}
+
+.folder:hover {
+  background-color: #3d7bad;
+}

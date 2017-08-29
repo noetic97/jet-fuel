@@ -70,8 +70,10 @@ describe('API Routes', () => {
       .end((err, response) => {
         response.should.have.status(201);
         response.should.be.json;
-        response.body.should.have.property('title');
-        response.body.title.should.equal('Sweet folder name')
+        response.body[0].should.have.property('title')
+        response.body[0].title.should.equal('Sweet folder name')
+        response.body[0].should.have.property('id')
+        response.body[0].id.should.equal(3)
         response.headers.should.have.property('content-type')
         response.headers['content-type'].should.equal('application/json; charset=utf-8')
         done();

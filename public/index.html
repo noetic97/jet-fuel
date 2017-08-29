@@ -24,15 +24,18 @@
     <h2>Stop wasting time! Add Jet Fuel to your web searches!</h2>
   </header>
   <main>
-    <form class="input-form">
+    <div class="select-folder">
       <select name="folder-select"
               id="folder-select">
         <option value="Select a folder"
                 disabled
                 selected>Select a folder
         </option>
-        <option value="Add a new folder">Add a new Folder</option>
+        <option value="Add a new folder">Add a new Folder
+        </option>
       </select>
+    </div>
+    <form class="input-form">
       <input type="text"
              placeholder="create a new folder"
              id="folder-namer"
@@ -54,6 +57,9 @@
     </section>
     <article class="folder-display">
       <h3 class="folder-name"></h3>
+    </article>
+    <article class="link-display">
+      <h3 class="link-description"></h3>
     </article>
   </main>
 <script src="index.js"></script>

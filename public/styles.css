@@ -75,3 +75,7 @@ input {
 .folder:hover {
   background-color: #3d7bad;
 }
+
+.hidden-display {
+  display: none;
+}

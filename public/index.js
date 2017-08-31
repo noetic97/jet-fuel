@@ -106,7 +106,7 @@ const addFolder = (e) => {
 const addLink = (e) => {
   e.preventDefault()
   const folder_id = $('#folder-select').val()
-  fetch(`/api/v1/folders/${folder_id.toString()}/links`, {
+  fetch(`/api/v1/links`, {
     method: 'POST',
     headers: {
       "Content-Type": "application/json"

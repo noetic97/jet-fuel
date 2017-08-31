@@ -13,7 +13,7 @@ body {
 }
 
 header {
-  height: 200px;
+  height: 240px;
   background-color: black;
   text-align: center;
 }
@@ -21,10 +21,6 @@ header {
 .logo {
   display: flex;
   justify-content: space-around;
-}
-
-img {
-  max-width: 400px;
 }
 
 h1 {
@@ -68,6 +64,10 @@ input {
 }
 
 section h3 {
+  text-align: center;
+}
+
+#error-display {
   text-align: center;
 }
 

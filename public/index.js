@@ -53,6 +53,10 @@ const appendFolders = (folders) => {
 };
 
 const appendLinks = (links, id) => {
+  if (links.error) {
+    return displayError('Please select a folder to add the link to.')
+  }
+  $('#error-display div').remove()
   const currentLinks = links.filter((link) => { 
     return parseInt(id) === link.folder_id})
   $('.link-list').append(currentLinks.map(linkWrapper));
@@ -91,11 +95,11 @@ const addFolder = (e) => {
     if (!data.error) {
       folderArray.push(data)
       appendFolders(data)
+      folderSelect.val(folderNamer.val())
       folderNamer.val('');
       folderNamer.hide()
       linkDescription.show()
       linkNamer.show()
-      folderSelect.val("Select a folder")
     } else {
       displayError(data.error)
     }

@@ -185,12 +185,12 @@ describe('API Routes', () => {
       .end((err, response) => {
         response.should.have.status(201);
         response.should.be.json;
-        response.body.should.have.property('description');
-        response.body.description.should.equal('Awesome link');
-        response.body.should.have.property('ogURL');
-        response.body.ogURL.should.equal('http://someplaceonthewebs.com');
-        response.body.should.have.property('folder_id');
-        response.body.folder_id.should.equal(1);
+        response.body[0].should.have.property('description');
+        response.body[0].description.should.equal('Awesome link');
+        response.body[0].should.have.property('ogURL');
+        response.body[0].ogURL.should.equal('http://someplaceonthewebs.com');
+        response.body[0].should.have.property('folder_id');
+        response.body[0].folder_id.should.equal(1);
         response.headers.should.have.property('content-type');
         response.headers['content-type'].should.equal('application/json; charset=utf-8');
         done();

@@ -12,8 +12,26 @@ const getFolders = () => {
   .catch(err => displayError(err))
 }
 
+const getLinks = () => {
+  fetch(`api/v1/links`)
+    .then(res => res.json())
+    .then(links => links.map((link) => {
+        let id = link.folder_id
+        appendLinks(links, id)
+      }))
+    .catch(err => displayError(err))
+}
+
 const displayError = (error) => {
   $('#error-display').append(`<div>ERROR: ${error}</div>`)
+}
+
+const checkUrl = (link) => {
+  if (!link.shortURL) {
+    return link.ogURL
+  } else {
+    return `/api/v1/links/${link.shortURL.substring(5)}`
+  }
 }
 
 const folderWrapper = (folder) => `<div class="folder" id=${folder.id}>
@@ -27,31 +45,22 @@ const folderWrapper = (folder) => `<div class="folder" id=${folder.id}>
                                       </article>
                                    </div>`;
 const folderOption = (folder) => `<option value=${folder.id}>${folder.title}</option>`;
-const linkWrapper = (link) => `<li id=${link.folder_id}>${link.description}: ${link.ogURL}</li>`;
+const linkWrapper = (link) => `<li id=${link.folder_id}><a href="${checkUrl(link)}">${link.description}:  ${link.shortURL}</a></li>`;
 
 const appendFolders = (folders) => {
   $('.folder-display').append(folders.map(folderWrapper));
   $('#folder-select').append(folders.map(folderOption));
 };
 
-const appendLinks = (links, e) => {
-  const currentLinks = links.filter((link) => {
-    return parseInt(e.target.id) === link.folder_id
-  })
+const appendLinks = (links, id) => {
+  const currentLinks = links.filter((link) => { 
+    return parseInt(id) === link.folder_id})
   $('.link-list').append(currentLinks.map(linkWrapper));
 }
 
 folderSubmit.click((e) => {
   e.preventDefault();
 });
-
-checkEnabled = () => {
-  if (folderNamer.val() === '' || linkNamer.val() === '' && linkDescription.val() === '') {
-        folderSubmit.attr('disabled')
-      }
-    folderSubmit.attr('disabled', false)
-}
-
 
 const toggleInputs = (e) => {
   if (e.target.value === 'Add a new folder') {
@@ -69,7 +78,6 @@ const toggleInputs = (e) => {
 
 const addFolder = (e) => {
   e.preventDefault()
-  checkEnabled()
   fetch('/api/v1/folders', {
     method: 'POST',
     headers: {
@@ -87,6 +95,7 @@ const addFolder = (e) => {
       folderNamer.hide()
       linkDescription.show()
       linkNamer.show()
+      folderSelect.val("Select a folder")
     } else {
       displayError(data.error)
     }
@@ -97,7 +106,7 @@ const addFolder = (e) => {
 const addLink = (e) => {
   e.preventDefault()
   const folder_id = $('#folder-select').val()
-  fetch('/api/v1/links', {
+  fetch(`/api/v1/folders/${folder_id.toString()}/links`, {
     method: 'POST',
     headers: {
       "Content-Type": "application/json"
@@ -110,28 +119,30 @@ const addLink = (e) => {
   })
   .then(res => res.json())
   .then(links => {
-    const linkArray = []
-    linkArray.push(links)
-    appendLinks(linkArray, e)
+    appendLinks(links, folder_id)
   })
   .catch(err => displayError(err))
   linkNamer.val('')
   linkDescription.val('')
 }
 
-
 const displayLinks = (e) => {
   const id = e.target.id;
-  fetch(`api/v1/folders/${id}/links`)
+  const loadedLinkId = $(`#${id}.link-list`)
+  if (id === loadedLinkId.attr('id')) {
+    $(`.folder-display #${id}`).find('.link-display').toggleClass('hidden-display');
+    console.log('yo man');
+  } else {
+    fetch(`api/v1/folders/${id}/links`)
     .then(res => res.json())
-    .then(links => appendLinks(links, e))
-    .catch(err => displayError(err))
-    $('.folder-display').find('.link-display').toggleClass('hidden-display');
+    .then(links => appendLinks(links, id))
+    .catch(err => displayError(err));
+  }
 }
 
 // Page load
 getFolders()
-checkEnabled()
+getLinks()
 folderNamer.hide()
 linkNamer.hide()
 linkDescription.hide()

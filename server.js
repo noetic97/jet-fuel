@@ -19,11 +19,35 @@ const requireHTTPS = (req, res, next) => {
     next()
   }
 
+app.use(requireHTTPS)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(requireHTTPS)
 app.use(express.static('public'));
 
+
+const base58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+const base = base58.length;
+
+const encode = (id) => {
+  let encoded = '';
+  while (id) {
+    let remainder = id % base;
+    id = Math.floor(id / base);
+    encoded = base58[remainder].toString() + encoded;
+  }
+  return encoded;
+}
+
+const decode = (string) => {
+  let decoded = 0;
+  while(string) {
+    let index = base58.indexOf(string[0]);
+    let power = string.length - 1;
+    decoded += index * (Math.pow(base, power));
+    string = string.substring(1);
+  }
+  return decoded;
+}
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
@@ -31,12 +55,8 @@ app.get('/', (req, res) => {
 
 app.get('/api/v1/folders', (req, res) => {
   database('folders').select()
-    .then(folders => {
-      res.status(200).json(folders)
-    })
-    .catch(err => {
-      res.status(500).json({ err })
-    });
+    .then(folders => res.status(200).json(folders))
+    .catch(error => res.status(500).json({ error }));
 });
 
 app.post('/api/v1/folders', (req, res) => {
@@ -50,7 +70,7 @@ app.post('/api/v1/folders', (req, res) => {
   }
   database('folders').insert(newFolder, '*')
   .then(folder => res.status(201).json(folder))
-  .catch(err => res.status(500).json({ err }))
+  .catch(error => res.status(500).json({ error }))
 });
 
 app.get('/api/v1/folders/:id', (req, res) => {
@@ -63,34 +83,18 @@ app.get('/api/v1/folders/:id', (req, res) => {
           error: `Could not find a folder with an id of ${id}`
         });
       }
-      res.status(200).json({ folder });
+      return res.status(200).json({ folder });
     })
-    .catch(err => res.status(500).json({ err }));
-});
-
-app.delete('/api/v1/folders/:id', (req, res) => {
-  const { id } = req.params;
-
-  database('folders').where({ id }).del()
-    .then(res => {
-      return res.status(200)
-      .json({ deleted: `The folder with id ${id} was successfully deleted.`})
-    })
-    .catch(err => res.status(404).json({ err: `The folder with id ${id} was not found` }));
+    .catch(error => res.status(500).json({ error }));
 });
 
 app.get('/api/v1/links', (req, res) => {
   database('links').select()
-    .then(links => {
-      res.status(200).json(links)
-    })
-    .catch(err => {
-      res.status(500).json({ err })
-    });
+    .then(links => res.status(200).json(links))
+    .catch(error => res.status(500).json({ error }));
 });
 
 app.post('/api/v1/links', (req, res) => {
-  const { id } = req.params;
   const newLink = req.body;
 
   for (let requiredParameter of ['description', 'ogURL', 'folder_id']) {
@@ -100,31 +104,30 @@ app.post('/api/v1/links', (req, res) => {
       })
     }
   }
-  database('links').insert(newLink, 'id')
+  database('links').insert(newLink, '*')
     .then(link => {
-      res.status(201).json(newLink)
+      let shortURL = `tiny/${encode(link[0].id)}`
+      Object.assign(link[0], { shortURL })
+      return res.status(201).json(link)
     })
 })
-
-app.delete('/api/v1/links/:id', (req, res) => {
-  const { id } = req.params;
-
-  database('links').where({ id }).del()
-  .then(res => res.status(200).json())
-  .catch(err => res.status(404).json({ error: err }))
-});
 
 app.get('/api/v1/folders/:id/links/', (req, res) => {
   const { id } = req.params;
 
   database('links').where({'folder_id': id }).select()
-    .then(links => {
-      res.status(200).json(links);
-    })
-    .catch(error => {
-      res.status(500).json({ error });
-    })
+    .then(links => res.status(200).json(links))
+    .catch(error => res.status(500).json({ error }))
 });
+
+app.route('/api/v1/links/:id')
+  .get((req, res) => {
+    let { id } = req.params;
+    id = decode(id)
+    database('links').where({ id }).select()
+      .then(link => res.status(302).redirect(link[0].ogURL))
+      .catch(error => res.status(404).json({ error }))
+  })
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on http://localhost:${app.get('port')}.`);

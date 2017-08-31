@@ -131,7 +131,6 @@ const displayLinks = (e) => {
   const loadedLinkId = $(`#${id}.link-list`)
   if (id === loadedLinkId.attr('id')) {
     $(`.folder-display #${id}`).find('.link-display').toggleClass('hidden-display');
-    console.log('yo man');
   } else {
     fetch(`api/v1/folders/${id}/links`)
     .then(res => res.json())

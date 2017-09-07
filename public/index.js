@@ -5,12 +5,12 @@ const linkDescription = $('.description-input')
 const folderSelect = $('select')
 const folderDisplay = $('.folder-display')
 
-const getFolders = () => {
+$(document).ready(() => {
   fetch('/api/v1/folders')
   .then(res => res.json())
   .then(folders => appendFolders(folders))
   .catch(err => displayError(err))
-}
+})
 
 const getLinks = () => {
   fetch(`api/v1/links`)
@@ -59,7 +59,7 @@ const appendLinks = (links, id) => {
   $('#error-display div').remove()
   const currentLinks = links.filter((link) => { 
     return parseInt(id) === link.folder_id})
-  $('.link-list').append(currentLinks.map(linkWrapper));
+  $(`#${id}.link-list`).append(currentLinks.map(linkWrapper));
 }
 
 folderSubmit.click((e) => {
@@ -163,8 +163,8 @@ const validateUrl = (url) => {
 }
 
 // Page load
-getFolders()
-getLinks()
+// getFolders()
+// getLinks()
 folderNamer.hide()
 linkNamer.hide()
 linkDescription.hide()

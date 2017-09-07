@@ -5,20 +5,37 @@ const linkDescription = $('.description-input')
 const folderSelect = $('select')
 const folderDisplay = $('.folder-display')
 
+const encode = (id) => {
+  const base58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+  const base = base58.length;
+  let encoded = '';
+  while (id) {
+    let remainder = id % base;
+    id = Math.floor(id / base);
+    encoded = base58[remainder].toString() + encoded;
+  }
+  return encoded;
+}
+
 $(document).ready(() => {
-  fetch('/api/v1/folders')
-  .then(res => res.json())
-  .then(folders => appendFolders(folders))
-  .catch(err => displayError(err))
+  getFolders();
+  getLinks()
 })
+
+const getFolders = () => {
+  fetch('/api/v1/folders')
+    .then(res => res.json())
+    .then(folders => appendFolders(folders))
+    .catch(err => displayError(err))
+}
 
 const getLinks = () => {
   fetch(`api/v1/links`)
     .then(res => res.json())
-    .then(links => links.map((link) => {
-        let id = link.folder_id
-        appendLinks(links, id)
-      }))
+    .then(links => {
+      console.log(links);
+      return appendLinks(links)
+    })
     .catch(err => displayError(err))
 }
 
@@ -30,7 +47,7 @@ const checkUrl = (link) => {
   if (!link.shortURL) {
     return link.ogURL
   } else {
-    return `/api/v1/links/${link.shortURL.substring(5)}`
+    return `/api/v1/links/${link.id}`
   }
 }
 
@@ -57,9 +74,12 @@ const appendLinks = (links, id) => {
     return displayError('Please select a folder to add the link to.')
   }
   $('#error-display div').remove()
-  const currentLinks = links.filter((link) => { 
-    return parseInt(id) === link.folder_id})
-  $(`#${id}.link-list`).append(currentLinks.map(linkWrapper));
+  const currentLinks = links.map((link) => { 
+    let linkArray = []
+    id = link.folder_id
+    linkArray.push(link)
+    $(`#${id}.link-list`).append(linkArray.map(linkWrapper));
+  })
 }
 
 folderSubmit.click((e) => {
@@ -114,7 +134,7 @@ const addLink = (e) => {
   const Url = linkNamer.val();
   const validUrl = validateUrl(Url)
   const folder_id = $('#folder-select').val()
-  
+    
   if (validUrl) {
     fetch(`/api/v1/links`, {
       method: 'POST',
@@ -125,6 +145,7 @@ const addLink = (e) => {
         description: linkDescription.val(),
         ogURL: Url,
         folder_id: folder_id,
+        shortURL: encode(Date.now())
       })
     })
     .then(res => res.json())
@@ -145,11 +166,6 @@ const displayLinks = (e) => {
   const loadedLinkId = $(`#${id}.link-list`)
   if (id === loadedLinkId.attr('id')) {
     $(`.folder-display #${id}`).find('.link-display').toggleClass('hidden-display');
-  } else {
-    fetch(`api/v1/folders/${id}/links`)
-    .then(res => res.json())
-    .then(links => appendLinks(links, id))
-    .catch(err => displayError(err));
   }
 }
 
@@ -163,8 +179,6 @@ const validateUrl = (url) => {
 }
 
 // Page load
-// getFolders()
-// getLinks()
 folderNamer.hide()
 linkNamer.hide()
 linkDescription.hide()

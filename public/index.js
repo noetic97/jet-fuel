@@ -4,6 +4,7 @@ const linkNamer = $('.link-input')
 const linkDescription = $('.description-input')
 const folderSelect = $('select')
 const folderDisplay = $('.folder-display')
+const sortButton = $('.filter-button')
 
 const encode = (id) => {
   const base58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -32,10 +33,7 @@ const getFolders = () => {
 const getLinks = () => {
   fetch(`api/v1/links`)
     .then(res => res.json())
-    .then(links => {
-      console.log(links);
-      return appendLinks(links)
-    })
+    .then(links => appendLinks(links))
     .catch(err => displayError(err))
 }
 
@@ -43,26 +41,27 @@ const displayError = (error) => {
   $('#error-display').append(`<div>ERROR: ${error}</div>`)
 }
 
-const checkUrl = (link) => {
-  if (!link.shortURL) {
-    return link.ogURL
-  } else {
-    return `/api/v1/links/${link.id}`
-  }
-}
+const checkUrl = (link) => `/api/v1/links/${link.id}`;
 
-const folderWrapper = (folder) => `<div class="folder" id=${folder.id}>
-                                     <p id=${folder.id}>${folder.title}</p>
-                                     <img class="folder-img"
-                                          id=${folder.id}
-                                          src="./assets/wood-folder.ico"
-                                          alt="wood folder">
-                                      <article class="link-display hidden-display">
-                                        <ul class="link-list" id=${folder.id}></ul>
-                                      </article>
-                                   </div>`;
+const folderWrapper = (folder) => 
+  `<div class="folder" id=${folder.id}>
+     <p id=${folder.id}>${folder.title}</p>
+     <img class="folder-img"
+          id=${folder.id}
+          src="./assets/wood-folder.ico"
+          alt="wood folder">
+      <article class="link-display hidden-display">
+        <button class="filter-button">Sort by Date</button>
+        <ul class="link-list" id=${folder.id}></ul>
+      </article>
+   </div>`;
 const folderOption = (folder) => `<option value=${folder.id}>${folder.title}</option>`;
-const linkWrapper = (link) => `<li id=${link.folder_id}><a href="${checkUrl(link)}">${link.description}:  ${link.shortURL}</a></li>`;
+const linkWrapper = (link) => 
+  `<li id=${link.folder_id}>
+     <p class="link-title">${link.description}:</p>
+     <a href="${checkUrl(link)}">  https://www.${link.shortURL}</a>
+     <p class="time-stamp">${link.created_at.split('T').join(' ').substring(0, 19)}</p>
+   </li>`;
 
 const appendFolders = (folders) => {
   $('.folder-display').append(folders.map(folderWrapper));
@@ -178,6 +177,13 @@ const validateUrl = (url) => {
   return true;
 }
 
+const sortByDate = () => {
+  console.log('this');
+  // const linkList = $((this).link-list);
+  // const links = linkList.children('li');
+  // linkList.append(links.get().reverse())
+}
+
 // Page load
 folderNamer.hide()
 linkNamer.hide()
@@ -188,3 +194,4 @@ folderDisplay.on('click', '.folder', displayLinks)
 folderSelect.on('change', toggleInputs)
 folderNamer.on('change', addFolder)
 linkNamer.on('change', addLink)
+sortButton.on('click', sortByDate)

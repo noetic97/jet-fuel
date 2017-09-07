@@ -100,6 +100,7 @@ const addFolder = (e) => {
       folderNamer.hide()
       linkDescription.show()
       linkNamer.show()
+      $('#error-display div').remove()
     } else {
       displayError(data.error)
     }
@@ -109,23 +110,32 @@ const addFolder = (e) => {
 
 const addLink = (e) => {
   e.preventDefault()
+
+  const Url = linkNamer.val();
+  const validUrl = validateUrl(Url)
   const folder_id = $('#folder-select').val()
-  fetch(`/api/v1/links`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-       description: linkDescription.val(),
-       ogURL: linkNamer.val(),
-       folder_id: folder_id,
+  
+  if (validUrl) {
+    fetch(`/api/v1/links`, {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        description: linkDescription.val(),
+        ogURL: Url,
+        folder_id: folder_id,
+      })
     })
-  })
-  .then(res => res.json())
-  .then(links => {
-    appendLinks(links, folder_id)
-  })
-  .catch(err => displayError(err))
+    .then(res => res.json())
+    .then(links => {
+      appendLinks(links, folder_id)
+      $('#error-display div').remove()
+    })
+    .catch(err => displayError(err))
+  } else {
+    displayError('That is not a valid URL.  Please try again.')
+  }
   linkNamer.val('')
   linkDescription.val('')
 }
@@ -141,6 +151,15 @@ const displayLinks = (e) => {
     .then(links => appendLinks(links, id))
     .catch(err => displayError(err));
   }
+}
+
+const validateUrl = (url) => {
+  const regValidate = /((?:https?\:\/\/|www\.)(?:[-a-z0-9]+\.)*[-a-z0-9]+.*)/i;
+  
+  if (!regValidate.test(url)) {
+    return false;
+  }
+  return true;
 }
 
 // Page load

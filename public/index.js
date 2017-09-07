@@ -4,18 +4,17 @@ const linkNamer = $('.link-input')
 const linkDescription = $('.description-input')
 const folderSelect = $('select')
 const folderDisplay = $('.folder-display')
-const sortButton = $('.filter-button')
 
-const encode = (id) => {
+const shorten = (id) => {
   const base58 = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
   const base = base58.length;
-  let encoded = '';
+  let shortened = '';
   while (id) {
     let remainder = id % base;
     id = Math.floor(id / base);
-    encoded = base58[remainder].toString() + encoded;
+    shortened = base58[remainder].toString() + shortened;
   }
-  return encoded;
+  return shortened;
 }
 
 $(document).ready(() => {
@@ -51,7 +50,7 @@ const folderWrapper = (folder) =>
           src="./assets/wood-folder.ico"
           alt="wood folder">
       <article class="link-display hidden-display">
-        <button class="filter-button">Sort by Date</button>
+        <button class="filter-button" id="${folder.id}">Sort by Date</button>
         <ul class="link-list" id=${folder.id}></ul>
       </article>
    </div>`;
@@ -60,7 +59,7 @@ const linkWrapper = (link) =>
   `<li id=${link.folder_id}>
      <p class="link-title">${link.description}:</p>
      <a href="${checkUrl(link)}">  https://www.${link.shortURL}</a>
-     <p class="time-stamp">${link.created_at.split('T').join(' ').substring(0, 19)}</p>
+     <p class="time-stamp">Created: ${link.created_at.split('T').join(' ').substring(0, 19)}</p>
    </li>`;
 
 const appendFolders = (folders) => {
@@ -144,7 +143,7 @@ const addLink = (e) => {
         description: linkDescription.val(),
         ogURL: Url,
         folder_id: folder_id,
-        shortURL: encode(Date.now())
+        shortURL: shorten(Date.now())
       })
     })
     .then(res => res.json())
@@ -152,9 +151,9 @@ const addLink = (e) => {
       appendLinks(links, folder_id)
       $('#error-display div').remove()
     })
-    .catch(err => displayError(err))
+    .catch(error => displayError(error))
   } else {
-    displayError('That is not a valid URL.  Please try again.')
+    return displayError('That is not a valid URL.  Please try again.')
   }
   linkNamer.val('')
   linkDescription.val('')
@@ -177,11 +176,11 @@ const validateUrl = (url) => {
   return true;
 }
 
-const sortByDate = () => {
-  console.log('this');
-  // const linkList = $((this).link-list);
-  // const links = linkList.children('li');
-  // linkList.append(links.get().reverse())
+const sortByDate = (e) => {
+  const id = e.target.id;
+  const linkList = $(`#${id}.link-list`);
+  const links = linkList.children('li');
+  linkList.append(links.get().reverse())
 }
 
 // Page load
@@ -190,8 +189,8 @@ linkNamer.hide()
 linkDescription.hide()
 
 // Event Listeners
-folderDisplay.on('click', '.folder', displayLinks)
+folderDisplay.on('click', '.folder-img', displayLinks)
+folderDisplay.on('click', '.filter-button', sortByDate)
 folderSelect.on('change', toggleInputs)
 folderNamer.on('change', addFolder)
 linkNamer.on('change', addLink)
-sortButton.on('click', sortByDate)
